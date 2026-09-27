@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#111827">
+<title>Admin — Vidyaverse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0f172a;--side:#111827;--side-2:#1f2937;--bg:#f3f4f8;--card:#fff;--line:#e5e7eb;
+    --accent:#4f46e5;--accent-soft:#eef2ff;--ok:#059669;--ok-soft:#d1fae5;--warn:#b45309;--warn-soft:#fef3c7;
+    --bad:#dc2626;--bad-soft:#fee2e2;--muted:#6b7280;--tg:#229ed9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums}
+  button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+  :focus-visible{outline:3px solid #a5b4fc;outline-offset:2px}
+  .hide{display:none!important}
+
+  /* ---------- login ---------- */
+  .login{min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--side)}
+  .login-card{background:#fff;border-radius:18px;padding:28px 24px;width:100%;max-width:380px}
+  .login-card h1{font-size:20px;font-weight:800;margin:14px 0 4px}
+  .login-card p{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+  .logo{width:44px;height:44px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
+  .err{color:var(--bad);font-size:13px;min-height:18px;margin-top:8px}
+
+  /* ---------- form controls ---------- */
+  label.f{display:block;font-size:12.5px;font-weight:700;color:#374151;margin:14px 0 5px}
+  .in,.sel,.ta{width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:10px;background:#fff;outline:none}
+  .in:focus,.sel:focus,.ta:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+  .ta{min-height:96px;resize:vertical;line-height:1.5}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:10px;border:1px solid transparent;font-weight:700;cursor:pointer;white-space:nowrap}
+  .btn.pri{background:var(--accent);color:#fff}.btn.pri:hover{background:#4338ca}
+  .btn.out{background:#fff;border-color:#d1d5db;color:#374151}.btn.out:hover{background:#f9fafb}
+  .btn.bad{background:#fff;border-color:#fecaca;color:var(--bad)}.btn.bad:hover{background:var(--bad-soft)}
+  .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:8px}
+  .btn.full{width:100%}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .switch{display:flex;align-items:center;gap:12px;cursor:pointer;padding:6px 0;position:relative}
+  .switch input{position:absolute;opacity:0}
+  .switch i{width:40px;height:23px;border-radius:12px;background:#cbd5e1;position:relative;flex-shrink:0;transition:background .15s}
+  .switch i::after{content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:transform .15s}
+  .switch input:checked+i{background:var(--accent)}
+  .switch input:checked+i::after{transform:translateX(17px)}
+  .switch input:focus-visible+i{outline:3px solid #a5b4fc;outline-offset:2px}
+  .switch span{font-weight:600}
+  .switch small{display:block;color:var(--muted);font-weight:500;font-size:12.5px}
+
+  /* ---------- shell ---------- */
+  .app{display:grid;grid-template-columns:236px 1fr;min-height:100%}
+  aside{background:var(--side);color:#cbd5e1;padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;color:#fff;font-weight:800;font-size:16px}
+  .brand .logo{width:34px;height:34px;font-size:16px;border-radius:9px}
+  .nav{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;border:0;background:none;color:inherit;font-weight:600;cursor:pointer;text-align:left;width:100%}
+  .nav svg{flex-shrink:0;opacity:.85}
+  .nav:hover{background:var(--side-2);color:#fff}
+  .nav.on{background:var(--accent);color:#fff}
+  .nav .pill{margin-left:auto;background:#ef4444;color:#fff;font-size:11px;font-weight:800;padding:1px 7px;border-radius:10px}
+  .side-foot{margin-top:auto;padding:10px 8px 0;font-size:12px;color:#94a3b8}
+  .scrim{display:none}
+  .main{min-width:0}
+  .top{position:sticky;top:0;z-index:20;background:rgba(243,244,248,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;gap:12px}
+  .top h1{font-size:19px;font-weight:800;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;align-items:center;justify-content:center}
+  .mode{font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px}
+  .mode.cloud{background:var(--ok-soft);color:#065f46}.mode.local{background:var(--warn-soft);color:var(--warn)}
+  .content{padding:20px;max-width:1180px}
+
+  /* ---------- cards / grids ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card+.card{margin-top:16px}
+  .cols>.card{margin-top:0}
+  .card h2{font-size:15px;font-weight:800;margin-bottom:2px}
+  .card .desc{color:var(--muted);font-size:13px;margin-bottom:12px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .kpi .l{color:var(--muted);font-size:12.5px;font-weight:600}
+  .kpi .v{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-top:2px}
+  .kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .kpi.live .v{color:var(--ok)}
+  .cols{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
+  .cols.eq{grid-template-columns:1fr 1fr}
+  .notice{background:var(--warn-soft);color:#78350f;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;line-height:1.55}
+  .notice b{font-weight:800}
+  .notice.info{background:var(--accent-soft);color:#312e81}
+
+  /* ---------- tables ---------- */
+  .tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .tools .in{flex:1;min-width:180px}
+  .tools .sel{width:auto;min-width:150px}
+  .tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+  table{width:100%;border-collapse:collapse;min-width:720px}
+  th{font-size:12px;font-weight:700;color:var(--muted);text-align:left;padding:10px 12px;background:#f9fafb;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:11px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  td .sub{color:var(--muted);font-size:12px}
+  td.num,th.num{text-align:right}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cbd5e1;margin-right:6px}
+  .dot.on{background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.2)}
+  .tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:6px;background:#f1f5f9;color:#475569}
+  .tag.ok{background:var(--ok-soft);color:#065f46}.tag.warn{background:var(--warn-soft);color:var(--warn)}.tag.bad{background:var(--bad-soft);color:#991b1b}.tag.acc{background:var(--accent-soft);color:#4338ca}
+  .pager{display:flex;align-items:center;justify-content:space-between;margin-top:12px;color:var(--muted);font-size:13px}
+  .empty{padding:36px 16px;text-align:center;color:var(--muted)}
+
+  /* ---------- lists ---------- */
+  .bars .r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;margin-bottom:12px}
+  .bars .r span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .bars .r em{font-style:normal;font-weight:800}
+  .bars .r div{grid-column:1/-1;height:7px;background:#eef0f4;border-radius:4px;overflow:hidden}
+  .bars .r div i{display:block;height:100%;background:var(--accent);border-radius:4px}
+  .stack{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:6px 0 12px;background:#eef0f4}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:#374151}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
+  .feed{list-style:none}
+  .feed li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #f1f5f9;font-size:13.5px}
+  .feed li:last-child{border-bottom:0}
+  .feed .ic{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--accent-soft)}
+  .feed small{display:block;color:var(--muted);font-size:12px}
+  svg text{font-family:inherit}
+  .chart-legend{display:flex;gap:16px;font-size:12.5px;color:#374151;margin-bottom:6px}
+  .chart-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+  /* ---------- doubts / notifications ---------- */
+  .item{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:#fff}
+  .item .hd{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+  .item .hd .sp{flex:1}
+  .item .txt{white-space:pre-wrap;word-break:break-word;line-height:1.6}
+  .item img.ph{display:block;max-width:100%;max-height:260px;border-radius:8px;margin-top:10px;border:1px solid var(--line)}
+  .reply{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .reply .ta{min-height:70px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:150px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .preview{border:1px dashed #c7d2fe;background:#fafaff;border-radius:14px;padding:18px}
+  .pv-ico{width:46px;height:46px;border-radius:14px;background:var(--tg);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+  .pv-btn{display:block;text-align:center;background:var(--tg);color:#fff;font-weight:700;padding:11px;border-radius:11px;margin-top:12px}
+  pre.code{background:#0f172a;color:#e2e8f0;padding:12px 14px;border-radius:10px;overflow:auto;font-size:12.5px;line-height:1.6;margin:8px 0}
+  ol.steps{padding-left:20px;line-height:1.8;color:#374151}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .chip{padding:6px 13px;border-radius:20px;border:1px solid var(--line);background:#fff;font-weight:600;cursor:pointer;color:#475569}
+  .chip.on{background:var(--accent-soft);border-color:#c7d2fe;color:#4338ca}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:11px 18px;border-radius:12px;font-weight:600;z-index:999;max-width:90vw}
+
+  @media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.cols,.cols.eq{grid-template-columns:1fr}}
+  @media(max-width:820px){
+    .app{grid-template-columns:1fr}
+    aside{position:fixed;left:0;top:0;bottom:0;width:250px;z-index:60;transform:translateX(-100%);transition:transform .2s}
+    aside.open{transform:none}
+    .scrim.open{display:block;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:55}
+    .burger{display:flex}
+    .content{padding:14px}
+    .kpi .v{font-size:24px}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script>window.VV_ADMIN = true;</script>
+<script src="/vv-core.js"></script>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section class="login" id="login">
+  <form class="login-card" id="loginForm" autocomplete="off">
+    <div class="logo">V</div>
+    <h1>Vidyaverse Admin</h1>
+    <p>Admin password daal ke andar aao.</p>
+    <label class="f" for="pw" style="margin-top:0">Password</label>
+    <input class="in" id="pw" type="password" autocomplete="current-password" required>
+    <div class="err" id="loginErr" role="alert"></div>
+    <button class="btn pri full" id="loginBtn" type="submit" style="margin-top:10px">Sign in</button>
+  </form>
+</section>
+
+<!-- ============ APP ============ -->
+<div class="app hide" id="app">
+  <aside id="side">
+    <div class="brand"><div class="logo">V</div>Vidyaverse</div>
+    <nav id="nav"></nav>
+    <div class="side-foot"><button class="nav" id="logout" style="padding:8px 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Sign out</button></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <div class="top">
+      <button class="burger" id="burger" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <h1 id="pageTitle">Dashboard</h1>
+      <span class="mode" id="modePill"></span>
+      <button class="btn out sm" id="refresh">Refresh</button>
+    </div>
+    <div class="content" id="view"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = VV.util.esc, ago = VV.util.ago, fmt = VV.util.fmtDate, ymd = VV.util.ymd;
+  var db = VV.db, DEF = VV.DEFAULT_CFG;
+  var SESSION = 'vv_admin_sess', ATT = 'vv_admin_att';
+
+  var ICON = {
+    dash: '<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>',
+    users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+    batch: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/>',
+    doubt: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+    bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+    site: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>',
+    tg: '<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>',
+    cog: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
+  };
+  var PAGES = [
+    ['dashboard', 'Dashboard', 'dash'], ['users', 'Users', 'users'], ['batches', 'Batches', 'batch'], ['doubts', 'Doubts', 'doubt'],
+    ['notifications', 'Notifications', 'bell'], ['site', 'Site updates', 'site'], ['telegram', 'Telegram', 'tg'], ['settings', 'Settings', 'cog']
+  ];
+
+  var S = { page: 'dashboard', d: null, cfg: null, loadedAt: 0, users: { q: '', f: 'all', p: 1 }, batches: { q: '' }, doubts: { f: 'open', b: '', q: '' } };
+
+  function toast(m) { var t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2600); }
+  function svg(k, sz) { return '<svg width="' + (sz || 18) + '" height="' + (sz || 18) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICON[k] + '</svg>'; }
+  function num(n) { return (n || 0).toLocaleString('en-IN'); }
+  function keys(o) { return Object.keys(o || {}); }
+
+  /* =====================================================
+     AUTH  (client-side gate. See Settings for security notes)
+     ===================================================== */
+  var LOGK = 'vv_admin_log', IDLE = 20 * 60 * 1000, MAXS = 4 * 3600 * 1000, LOCK_MIN = [5, 15, 60, 1440];
+  function rnd() { var a = new Uint8Array(16); crypto.getRandomValues(a); return Array.prototype.map.call(a, function (x) { return ('0' + x.toString(16)).slice(-2); }).join(''); }
+  function sess() { try { return JSON.parse(sessionStorage.getItem(SESSION) || 'null'); } catch (e) { return null; } }
+  function authed() { var s = sess(); return !!(s && s.exp > Date.now() && s.idle > Date.now()); }
+  function touch(fresh) {
+    var s = fresh ? null : sess(), n = Date.now();
+    if (!s) s = { tok: rnd(), exp: n + MAXS };
+    s.idle = n + IDLE; sessionStorage.setItem(SESSION, JSON.stringify(s));
+  }
+  function att() { try { return JSON.parse(localStorage.getItem(ATT) || '{}'); } catch (e) { return {}; } }
+  function logins() { try { return JSON.parse(localStorage.getItem(LOGK) || '[]'); } catch (e) { return []; } }
+  function logEv(ok) {
+    var l = logins(); l.unshift({ t: Date.now(), ok: ok, ua: (navigator.userAgent.match(/(Edg|Chrome|Firefox|Safari)\/[\d.]+/) || ['browser'])[0] });
+    try { localStorage.setItem(LOGK, JSON.stringify(l.slice(0, 30))); } catch (e) {}
+  }
+  function endSession(msg) {
+    sessionStorage.removeItem(SESSION); if (msg) sessionStorage.setItem('vv_admin_msg', msg);
+    try { localStorage.setItem('vv_admin_bye', String(Date.now())); } catch (e) {}
+    location.reload();
+  }
+  (function () { var m = sessionStorage.getItem('vv_admin_msg'); if (m) { sessionStorage.removeItem('vv_admin_msg'); $('#loginErr').textContent = m; } })();
+
+  $('#loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var a = att(), err = $('#loginErr');
+    if (a.until && a.until > Date.now()) { err.textContent = 'Bahut galat attempts. ' + Math.ceil((a.until - Date.now()) / 60000) + ' min baad try karo.'; return; }
+    var btn = $('#loginBtn'); btn.disabled = true; err.textContent = '';
+    VV.verifyAdmin($('#pw').value).then(function (ok) {
+      return new Promise(function (r) { setTimeout(function () { r(ok); }, 600); });
+    }).then(function (ok) {
+      if (ok) { localStorage.removeItem(ATT); logEv(true); touch(true); $('#pw').value = ''; start(); }
+      else {
+        var n = (a.n || 0) + 1, lvl = Math.min(a.lvl || 0, LOCK_MIN.length - 1), lock = n >= 5; logEv(false);
+        localStorage.setItem(ATT, JSON.stringify({ n: lock ? 0 : n, lvl: lock ? Math.min(lvl + 1, LOCK_MIN.length - 1) : lvl, until: lock ? Date.now() + LOCK_MIN[lvl] * 60000 : 0 }));
+        err.textContent = lock ? '5 galat attempts. ' + LOCK_MIN[lvl] + ' minute ke liye lock.' : 'Password galat hai. (' + (5 - n) + ' attempts baaki)';
+      }
+    }).catch(function () { err.textContent = 'Login sirf https ya localhost par chalta hai.'; })
+      .then(function () { btn.disabled = false; });
+  });
+  $('#logout').onclick = function () { endSession(); };
+  window.addEventListener('storage', function (e) { if (e.key === 'vv_admin_bye') { sessionStorage.removeItem(SESSION); location.reload(); } });
+  var lastTouch = 0;
+  ['click', 'keydown', 'touchstart', 'scroll'].forEach(function (ev) {
+    window.addEventListener(ev, function () { var n = Date.now(); if (authed() && n - lastTouch > 10000) { lastTouch = n; touch(false); } }, { passive: true });
+  });
+
+  /* =====================================================
+     DATA
+     ===================================================== */
+  function load() {
+    var paths = ['users', 'enroll', 'views', 'doubts', 'notifs', 'config', 'blocked', 'updates'];
+    return Promise.all(paths.map(function (p) { return db.get(p); })).then(function (r) {
+      var d = {}; paths.forEach(function (p, i) { d[p] = r[i] || {}; });
+      S.d = d; S.cfg = VV.util.deepMerge(DEF, d.config); S.loadedAt = Date.now();
+      derive();
+    });
+  }
+  function derive() {
+    var d = S.d, now = Date.now(), today = ymd();
+    var enr = [], dbt = [], enrBy = {}, dbBy = {};
+    keys(d.enroll).forEach(function (uid) { keys(d.enroll[uid]).forEach(function (bid) { var e = d.enroll[uid][bid]; enr.push({ uid: uid, batchId: bid, name: e.name, at: e.at, cls: e.class, exam: e.exam }); enrBy[uid] = (enrBy[uid] || 0) + 1; }); });
+    keys(d.doubts).forEach(function (uid) { keys(d.doubts[uid]).forEach(function (id) { var x = d.doubts[uid][id]; x.uid = uid; x.id = id; dbt.push(x); dbBy[uid] = (dbBy[uid] || 0) + 1; }); });
+    var users = keys(d.users).map(function (id) { var u = d.users[id]; u.id = id; return u; });
+    S.enr = enr; S.dbt = dbt.sort(function (a, b) { return (b.at || 0) - (a.at || 0); }); S.enrBy = enrBy; S.dbBy = dbBy; S.users_ = users;
+    S.k = {
+      total: users.length,
+      online: users.filter(function (u) { return now - (u.last || 0) < 120000; }).length,
+      today: users.filter(function (u) { return u.days && u.days[today]; }).length,
+      newToday: users.filter(function (u) { return u.first && ymd(u.first) === today; }).length,
+      d7: users.filter(function (u) { return now - (u.last || 0) < 7 * 864e5; }).length,
+      d30: users.filter(function (u) { return now - (u.last || 0) < 30 * 864e5; }).length,
+      enr: enr.length, doubts: dbt.length, open: dbt.filter(function (x) { return x.status !== 'answered'; }).length,
+      tgUsers: users.filter(function (u) { return u.tgClicks; }).length,
+      tgClicks: users.reduce(function (s, u) { return s + (u.tgClicks || 0); }, 0)
+    };
+  }
+  function uname(uid) { var u = S.d.users[uid]; return (u && u.name) ? u.name : 'Guest ' + String(uid).slice(-5); }
+
+  /* =====================================================
+     SHELL
+     ===================================================== */
+  function buildNav() {
+    $('#nav').innerHTML = PAGES.map(function (p) {
+      var badge = p[0] === 'doubts' && S.k && S.k.open ? '<span class="pill">' + S.k.open + '</span>' : '';
+      return '<button class="nav' + (S.page === p[0] ? ' on' : '') + '" data-p="' + p[0] + '">' + svg(p[2]) + p[1] + badge + '</button>';
+    }).join('');
+  }
+  $('#nav').addEventListener('click', function (e) { var b = e.target.closest('.nav'); if (b) go(b.dataset.p); });
+  function closeMenu() { $('#side').classList.remove('open'); $('#scrim').classList.remove('open'); }
+  $('#burger').onclick = function () { $('#side').classList.add('open'); $('#scrim').classList.add('open'); };
+  $('#scrim').onclick = closeMenu;
+  $('#refresh').onclick = function () { reload(true); };
+
+  function go(p) { S.page = p; closeMenu(); touch(); render(); window.scrollTo(0, 0); }
+  function reload(showToast) {
+    var b = $('#refresh'); b.disabled = true; b.textContent = 'Refreshing…';
+    return load().then(function () { render(); if (showToast) toast('Data updated'); })
+      .catch(function () { toast('Data load nahi hua. Connection ya Firebase URL check karo.'); })
+      .then(function () { b.disabled = false; b.textContent = 'Refresh'; });
+  }
+  function render() {
+    var meta = PAGES.filter(function (p) { return p[0] === S.page; })[0];
+    $('#pageTitle').textContent = meta[1];
+    var m = $('#modePill'); m.className = 'mode ' + db.mode; m.textContent = db.mode === 'cloud' ? 'Live' : 'Demo'; m.title = db.mode === 'cloud' ? 'Connected to cloud database: all users' : 'Demo mode: data is stored only in this browser';
+    buildNav();
+    var v = $('#view'); v.innerHTML = '';
+    (R[S.page] || R.dashboard)(v);
+  }
+  function start() {
+    $('#login').classList.add('hide'); $('#app').classList.remove('hide');
+    $('#view').innerHTML = '<div class="empty">Loading…</div>';
+    load().then(render).catch(function () { $('#view').innerHTML = '<div class="notice"><b>Data load nahi hua.</b> Firebase URL ya internet check karo (Settings page login ke baad khulega). URL galat ho to browser console me localStorage.removeItem("vv_cloud") chalao.</div>'; S.k = null; S.d = { users: {}, enroll: {}, views: {}, doubts: {}, notifs: {}, config: {}, blocked: {}, updates: {} }; S.cfg = VV.util.deepMerge(DEF, {}); derive(); buildNav(); });
+    setInterval(function () { if (S.page === 'dashboard' && !document.hidden && authed()) load().then(function () { if (S.page === 'dashboard') render(); }).catch(function () {}); }, 20000);
+    setInterval(function () { if (!authed()) endSession('Session expire ho gaya (20 min inactive ya 4 ghante). Dobara login karo.'); }, 15000);
+  }
+
+  /* =====================================================
+     PAGES
+     ===================================================== */
+  var R = {};
+
+  /* ---------- Dashboard ---------- */
+  function chartSVG(days) {
+    var W = 640, H = 230, pl = 34, pr = 8, pt = 12, pb = 26;
+    var mx = Math.max.apply(null, days.map(function (d) { return Math.max(d.a, d.n); }).concat([4]));
+    var step = Math.ceil(mx / 4), top = step * 4, ih = H - pt - pb, bw = (W - pl - pr) / days.length;
+    function y(v) { return pt + ih - (v / top) * ih; }
+    var g = '', i;
+    for (i = 0; i <= 4; i++) { var gv = step * i; g += '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(gv) + '" y2="' + y(gv) + '" stroke="#e5e7eb"/><text x="' + (pl - 6) + '" y="' + (y(gv) + 4) + '" font-size="11" fill="#6b7280" text-anchor="end">' + gv + '</text>'; }
+    var bars = '', pts = [], lbl = '';
+    days.forEach(function (d, k) {
+      var x = pl + k * bw, h = (d.a / top) * ih;
+      bars += '<rect x="' + (x + bw * .2) + '" y="' + (pt + ih - h) + '" width="' + (bw * .6) + '" height="' + h + '" rx="3" fill="#4f46e5"><title>' + d.l + ': ' + d.a + ' active, ' + d.n + ' new</title></rect>';
+      pts.push((x + bw / 2) + ',' + y(d.n));
+      if (k % 2 === 0 || days.length < 9) lbl += '<text x="' + (x + bw / 2) + '" y="' + (H - 8) + '" font-size="11" fill="#6b7280" text-anchor="middle">' + d.s + '</text>';
+    });
+    var dots = pts.map(function (p) { var c = p.split(','); return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="3.5" fill="#fff" stroke="#059669" stroke-width="2"/>'; }).join('');
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="Daily active and new users, last 14 days">' + g + bars + '<polyline points="' + pts.join(' ') + '" fill="none" stroke="#059669" stroke-width="2.2"/>' + dots + lbl + '</svg>';
+  }
+  R.dashboard = function (v) {
+    var k = S.k, now = Date.now(), users = S.users_;
+    var days = [], i;
+    for (i = 13; i >= 0; i--) {
+      var t = now - i * 864e5, key = ymd(t), dt = new Date(t);
+      days.push({ l: key, s: dt.getDate() + '/' + (dt.getMonth() + 1), a: users.filter(function (u) { return u.days && u.days[key]; }).length, n: users.filter(function (u) { return u.first && ymd(u.first) === key; }).length });
+    }
+    var bmap = {}; S.enr.forEach(function (e) { (bmap[e.batchId] = bmap[e.batchId] || { name: e.name, n: 0 }).n++; });
+    var top = keys(bmap).map(function (id) { return bmap[id]; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 6), topMax = top.length ? top[0].n : 1;
+    var dev = {}; users.forEach(function (u) { var x = u.device || 'Other'; dev[x] = (dev[x] || 0) + 1; });
+    var devKeys = keys(dev).sort(function (a, b) { return dev[b] - dev[a]; }), DC = ['#4f46e5', '#059669', '#d97706', '#0ea5e9', '#a855f7', '#94a3b8'];
+    var feed = [];
+    users.forEach(function (u) { if (u.first) feed.push({ t: u.first, i: '👤', x: '<b>' + esc(u.name || 'Guest ' + u.id.slice(-5)) + '</b> joined' }); if (u.tgAt) feed.push({ t: u.tgAt, i: '✈️', x: '<b>' + esc(u.name || 'Guest ' + u.id.slice(-5)) + '</b> tapped Join Telegram' }); });
+    S.enr.forEach(function (e) { feed.push({ t: e.at, i: '📚', x: '<b>' + esc(uname(e.uid)) + '</b> enrolled in ' + esc(e.name) }); });
+    S.dbt.forEach(function (x) { feed.push({ t: x.at, i: '❓', x: '<b>' + esc(x.name || uname(x.uid)) + '</b> asked a ' + esc(x.subject || '') + ' doubt' }); });
+    feed.sort(function (a, b) { return (b.t || 0) - (a.t || 0); }); feed = feed.slice(0, 10);
+
+    v.innerHTML =
+      (db.mode === 'local' ? '<div class="notice"><b>Demo mode.</b> Abhi data sirf isi browser me save ho raha hai, isliye real users ka count nahi dikhega. Sabhi users ka data dekhne ke liye <a href="#" data-go="settings" style="color:inherit;font-weight:800">Settings</a> me Firebase connect karo.</div>' : '') +
+      (S.cfg.site.maintenance ? '<div class="notice"><b>Maintenance mode ON hai.</b> Users ko site nahi dikh rahi. <a href="#" data-go="site" style="color:inherit;font-weight:800">Site updates</a> se band karo.</div>' : '') +
+      '<div class="kpis">' +
+      kpi('Total users', num(k.total), num(k.newToday) + ' new today') +
+      kpi('Online now', num(k.online), 'active in last 2 min', 'live') +
+      kpi('Active today', num(k.today), num(k.d7) + ' in 7 days · ' + num(k.d30) + ' in 30') +
+      kpi('Enrollments', num(k.enr), num(keys(bmap).length) + ' batches') +
+      kpi('Doubts', num(k.doubts), num(k.open) + ' waiting for reply') +
+      kpi('Telegram taps', num(k.tgClicks), num(k.tgUsers) + ' unique users') +
+      kpi('Notifications', num(keys(S.d.notifs).length), 'published') +
+      kpi('Blocked', num(keys(S.d.blocked).length), 'devices') +
+      '</div>' +
+      '<div class="cols"><div class="card"><h2>Last 14 days</h2><div class="chart-legend"><span><i style="background:#4f46e5"></i>Active users</span><span><i style="background:#059669"></i>New users</span></div>' + chartSVG(days) + '</div>' +
+      '<div class="card"><h2>Devices</h2><div class="desc">Users by operating system</div>' +
+      (users.length ? '<div class="stack">' + devKeys.map(function (x, n) { return '<i style="width:' + (dev[x] / users.length * 100) + '%;background:' + DC[n % 6] + '"></i>'; }).join('') + '</div><div class="legend">' + devKeys.map(function (x, n) { return '<span><i style="background:' + DC[n % 6] + '"></i>' + esc(x) + ' ' + dev[x] + '</span>'; }).join('') + '</div>' : '<div class="empty">No users yet</div>') + '</div></div>' +
+      '<div class="cols eq"><div class="card"><h2>Top batches</h2><div class="desc">By enrollments</div><div class="bars">' +
+      (top.length ? top.map(function (b) { return '<div class="r"><span>' + esc(b.name) + '</span><em>' + b.n + '</em><div><i style="width:' + (b.n / topMax * 100) + '%"></i></div></div>'; }).join('') : '<div class="empty">No enrollments yet</div>') + '</div></div>' +
+      '<div class="card"><h2>Recent activity</h2><div class="desc">Latest 10 events</div><ul class="feed">' +
+      (feed.length ? feed.map(function (f) { return '<li><span class="ic">' + f.i + '</span><div>' + f.x + '<small>' + esc(ago(f.t)) + '</small></div></li>'; }).join('') : '<li class="empty" style="display:block">No activity yet</li>') + '</ul></div></div>' +
+      '<div style="color:var(--muted);font-size:12px">Updated ' + esc(ago(S.loadedAt)) + '. Dashboard har 20 second me auto-refresh hota hai.</div>';
+    v.onclick = function (e) { var a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); go(a.dataset.go); } };
+  };
+  function kpi(l, v, s, cls) { return '<div class="kpi ' + (cls || '') + '"><div class="l">' + l + '</div><div class="v">' + v + '</div><div class="s">' + s + '</div></div>'; }
+
+  /* ---------- Users ---------- */
+  var PER = 20;
+  function userRows() {
+    var q = S.users.q.toLowerCase(), f = S.users.f, now = Date.now(), today = ymd();
+    return S.users_.filter(function (u) {
+      if (q && (String(u.name || '') + ' ' + u.id + ' ' + (u.device || '')).toLowerCase().indexOf(q) < 0) return false;
+      if (f === 'online') return now - (u.last || 0) < 120000;
+      if (f === 'today') return u.days && u.days[today];
+      if (f === 'blocked') return !!S.d.blocked[u.id];
+      if (f === 'tg') return !!u.tgClicks;
+      return true;
+    }).sort(function (a, b) { return (b.last || 0) - (a.last || 0); });
+  }
+  R.users = function (v) {
+    v.innerHTML = '<div class="tools"><input class="in" id="uq" placeholder="Search name, ID, device" value="' + esc(S.users.q) + '">' +
+      '<select class="sel" id="uf">' + [['all', 'All users'], ['online', 'Online now'], ['today', 'Active today'], ['tg', 'Tapped Telegram'], ['blocked', 'Blocked']].map(function (o) { return '<option value="' + o[0] + '"' + (S.users.f === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
+      '<button class="btn out" id="ucsv">Export CSV</button></div><div id="utab"></div>';
+    $('#uq').oninput = function () { S.users.q = this.value; S.users.p = 1; drawUsers(); };
+    $('#uf').onchange = function () { S.users.f = this.value; S.users.p = 1; drawUsers(); };
+    $('#ucsv').onclick = exportUsers;
+    v.onclick = userClicks;
+    drawUsers();
+  };
+  function drawUsers() {
+    var rows = userRows(), pages = Math.max(1, Math.ceil(rows.length / PER)); if (S.users.p > pages) S.users.p = pages;
+    var slice = rows.slice((S.users.p - 1) * PER, S.users.p * PER), now = Date.now();
+    $('#utab').innerHTML = rows.length ?
+      '<div class="tw"><table><thead><tr><th>User</th><th>Device</th><th>First seen</th><th>Last seen</th><th class="num">Visits</th><th class="num">Batches</th><th class="num">Doubts</th><th>Telegram</th><th></th></tr></thead><tbody>' +
+      slice.map(function (u) {
+        var on = now - (u.last || 0) < 120000, bl = !!S.d.blocked[u.id];
+        return '<tr><td><b>' + esc(u.name || 'Guest') + '</b> ' + (bl ? '<span class="tag bad">Blocked</span>' : '') + '<div class="sub">ID …' + esc(u.id.slice(-8)) + '</div></td><td>' + esc(u.device || '—') + '</td><td>' + esc(fmt(u.first)) + '</td>' +
+          '<td><span class="dot' + (on ? ' on' : '') + '"></span>' + (on ? 'Online' : esc(ago(u.last))) + '</td><td class="num">' + (u.visits || 0) + '</td><td class="num">' + (S.enrBy[u.id] || 0) + '</td><td class="num">' + (S.dbBy[u.id] || 0) + '</td>' +
+          '<td>' + (u.tgClicks ? '<span class="tag ok">Tapped ×' + u.tgClicks + '</span>' : '<span class="tag">No</span>') + '</td>' +
+          '<td style="white-space:nowrap"><button class="btn out sm" data-blk="' + esc(u.id) + '">' + (bl ? 'Unblock' : 'Block') + '</button> <button class="btn bad sm" data-del="' + esc(u.id) + '">Delete</button></td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<div class="pager"><span>' + num(rows.length) + ' user' + (rows.length > 1 ? 's' : '') + '</span><span><button class="btn out sm" data-pg="-1"' + (S.users.p <= 1 ? ' disabled' : '') + '>Prev</button> &nbsp;Page ' + S.users.p + ' of ' + pages + '&nbsp; <button class="btn out sm" data-pg="1"' + (S.users.p >= pages ? ' disabled' : '') + '>Next</button></span></div>'
+      : '<div class="tw"><div class="empty">Koi user nahi mila</div></div>';
+  }
+  function userClicks(e) {
+    var t;
+    if ((t = e.target.closest('[data-pg]'))) { S.users.p += +t.dataset.pg; drawUsers(); }
+    else if ((t = e.target.closest('[data-blk]'))) {
+      var id = t.dataset.blk, was = !!S.d.blocked[id];
+      (was ? db.remove('blocked/' + id) : db.set('blocked/' + id, true)).then(function () { if (was) delete S.d.blocked[id]; else S.d.blocked[id] = true; drawUsers(); toast(was ? 'User unblocked' : 'User blocked'); }).catch(fail);
+    } else if ((t = e.target.closest('[data-del]'))) {
+      var uid = t.dataset.del;
+      if (!confirm('Is user ka poora data (enrollments, doubts) delete hoga. Pakka?')) return;
+      Promise.all(['users', 'enroll', 'views', 'doubts', 'blocked'].map(function (p) { return db.remove(p + '/' + uid); })).then(function () { return reload(); }).then(function () { toast('User deleted'); }).catch(fail);
+    }
+  }
+  function fail() { toast('Save nahi hua. Connection check karo.'); }
+  function exportUsers() {
+    var rows = userRows(), out = [['id', 'name', 'device', 'first_seen', 'last_seen', 'visits', 'batches', 'doubts', 'telegram_taps']];
+    rows.forEach(function (u) { out.push([u.id, u.name || '', u.device || '', u.first ? new Date(u.first).toISOString() : '', u.last ? new Date(u.last).toISOString() : '', u.visits || 0, S.enrBy[u.id] || 0, S.dbBy[u.id] || 0, u.tgClicks || 0]); });
+    download('vidyaverse-users-' + ymd() + '.csv', out.map(function (r) { return r.map(function (c) { c = String(c); if (/^[=+\-@]/.test(c)) c = "'" + c; return '"' + c.replace(/"/g, '""') + '"'; }).join(','); }).join('\n'), 'text/csv');
+  }
+  function download(name, text, type) {
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  /* ---------- Batches ---------- */
+  R.batches = function (v) {
+    var map = {};
+    S.enr.forEach(function (e) { var m = map[e.batchId] = map[e.batchId] || { name: e.name, cls: e.cls, exam: e.exam, enr: 0, views: 0, viewers: 0, last: 0 }; m.enr++; m.last = Math.max(m.last, e.at || 0); });
+    keys(S.d.views).forEach(function (uid) { keys(S.d.views[uid]).forEach(function (bid) { var x = S.d.views[uid][bid], m = map[bid] = map[bid] || { name: x.name, enr: 0, views: 0, viewers: 0, last: 0 }; m.views += x.n || 0; m.viewers++; if (!m.name) m.name = x.name; }); });
+    var rows = keys(map).map(function (id) { map[id].id = id; return map[id]; }).sort(function (a, b) { return b.enr - a.enr || b.views - a.views; });
+    v.innerHTML = '<div class="tools"><input class="in" id="bq" placeholder="Search batch" value="' + esc(S.batches.q) + '"></div><div id="btab"></div>';
+    function draw() {
+      var q = S.batches.q.toLowerCase(), r = rows.filter(function (b) { return !q || String(b.name).toLowerCase().indexOf(q) > -1; });
+      $('#btab').innerHTML = r.length ? '<div class="tw"><table><thead><tr><th>Batch</th><th>Class / Exam</th><th class="num">Enrolled</th><th class="num">Opens</th><th class="num">Unique viewers</th><th>Last enrolled</th></tr></thead><tbody>' +
+        r.map(function (b) { return '<tr><td><b>' + esc(b.name || 'Batch') + '</b><div class="sub">' + esc(b.id) + '</div></td><td>' + esc([b.cls ? 'Class ' + b.cls : '', b.exam].filter(Boolean).join(' · ') || '—') + '</td><td class="num"><b>' + b.enr + '</b></td><td class="num">' + b.views + '</td><td class="num">' + b.viewers + '</td><td>' + (b.last ? esc(ago(b.last)) : '—') + '</td></tr>'; }).join('') + '</tbody></table></div>'
+        : '<div class="tw"><div class="empty">Abhi kisi ne batch enroll ya open nahi kiya</div></div>';
+    }
+    $('#bq').oninput = function () { S.batches.q = this.value; draw(); }; draw();
+  };
+
+  /* ---------- Doubts ---------- */
+  R.doubts = function (v) {
+    var bs = {}; S.dbt.forEach(function (d) { bs[d.batchId || 'other'] = d.batchName; });
+    v.innerHTML = '<div class="chips" id="dchips">' + [['open', 'Open'], ['answered', 'Answered'], ['all', 'All']].map(function (c) { return '<button class="chip' + (S.doubts.f === c[0] ? ' on' : '') + '" data-f="' + c[0] + '">' + c[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="tools"><input class="in" id="dq" placeholder="Search doubt text or student" value="' + esc(S.doubts.q) + '"><select class="sel" id="db"><option value="">All batches</option>' + keys(bs).map(function (id) { return '<option value="' + esc(id) + '"' + (S.doubts.b === id ? ' selected' : '') + '>' + esc(bs[id]) + '</option>'; }).join('') + '</select></div><div id="dlist"></div>';
+    function draw() {
+      var q = S.doubts.q.toLowerCase();
+      var r = S.dbt.filter(function (d) {
+        if (S.doubts.f === 'open' && d.status === 'answered') return false;
+        if (S.doubts.f === 'answered' && d.status !== 'answered') return false;
+        if (S.doubts.b && (d.batchId || 'other') !== S.doubts.b) return false;
+        return !q || (String(d.text) + ' ' + (d.name || '')).toLowerCase().indexOf(q) > -1;
+      });
+      $('#dlist').innerHTML = r.length ? r.map(function (d) {
+        var done = d.status === 'answered';
+        return '<div class="item" data-k="' + esc(d.uid + '|' + d.id) + '"><div class="hd"><b>' + esc(d.name || uname(d.uid)) + '</b><span class="tag acc">' + esc(d.batchName) + '</span><span class="tag">' + esc(d.subject || 'Other') + '</span><span class="tag">' + esc(d.type || 'GENERAL') + '</span><span class="sp"></span><span class="tag ' + (done ? 'ok' : 'warn') + '">' + (done ? 'Answered' : 'Open') + '</span><span class="sub" style="color:var(--muted);font-size:12px">' + esc(fmt(d.at)) + '</span></div>' +
+          '<div class="txt">' + esc(d.text) + '</div>' + (d.img && /^data:image\//.test(d.img) ? '<img class="ph" src="' + esc(d.img) + '" alt="Attachment">' : '') +
+          '<div class="reply"><textarea class="ta" placeholder="Answer likho…">' + esc(d.answer || '') + '</textarea><div class="btns" style="margin-top:0"><button class="btn pri sm" data-send>' + (done ? 'Update answer' : 'Send answer') + '</button><button class="btn bad sm" data-rm>Delete</button></div></div></div>';
+      }).join('') : '<div class="tw"><div class="empty">' + (S.dbt.length ? 'Is filter me koi doubt nahi' : 'Abhi tak kisi ne doubt nahi pucha') + '</div></div>';
+    }
+    v.onclick = function (e) {
+      var c = e.target.closest('.chip'); if (c) { S.doubts.f = c.dataset.f; R.doubts(v); return; }
+      var it = e.target.closest('.item'); if (!it) return;
+      var kk = it.dataset.k.split('|'), path = 'doubts/' + kk[0] + '/' + kk[1], d = S.d.doubts[kk[0]][kk[1]];
+      if (e.target.closest('[data-send]')) {
+        var a = $('.ta', it).value.trim(); if (!a) { toast('Pehle answer likho'); return; }
+        var up = { answer: a, status: 'answered', answeredAt: Date.now() };
+        db.update(path, up).then(function () { Object.assign(d, up); derive(); buildNav(); draw(); toast('Answer sent'); }).catch(fail);
+      } else if (e.target.closest('[data-rm]')) {
+        if (!confirm('Doubt delete karna hai?')) return;
+        db.remove(path).then(function () { return reload(); }).then(function () { toast('Doubt deleted'); }).catch(fail);
+      }
+    };
+    $('#dq').oninput = function () { S.doubts.q = this.value; draw(); };
+    $('#db').onchange = function () { S.doubts.b = this.value; draw(); };
+    draw();
+  };
+
+  /* ---------- Notifications ---------- */
+  R.notifications = function (v) {
+    var list = keys(S.d.notifs).map(function (id) { var n = S.d.notifs[id]; n.id = id; return n; }).sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+    v.innerHTML = '<div class="cols eq" style="align-items:start"><div class="card"><h2>New notification</h2><div class="desc">Sabhi users ko bell icon me dikhega, unread badge ke saath.</div>' +
+      '<label class="f" for="nt" style="margin-top:0">Title</label><input class="in" id="nt" maxlength="80" placeholder="Jaise: New JEE batch live">' +
+      '<label class="f" for="nm">Message</label><textarea class="ta" id="nm" maxlength="400" placeholder="Details (optional)"></textarea>' +
+      '<div class="row"><div><label class="f" for="ny">Type</label><select class="sel" id="ny"><option value="info">Info</option><option value="update">Update</option><option value="warning">Warning</option></select></div>' +
+      '<div><label class="f" for="nl">Link (optional)</label><input class="in" id="nl" placeholder="https://"></div></div>' +
+      '<label class="switch"><input type="checkbox" id="np"><i></i><span>Pin to top<small>Pinned notifications hamesha sabse upar rehte hain</small></span></label>' +
+      '<div class="btns"><button class="btn pri" id="nsend">Publish notification</button></div></div>' +
+      '<div class="card"><h2>Published (' + list.length + ')</h2><div class="desc">Latest first</div>' +
+      (list.length ? list.map(function (n) { return '<div class="item"><div class="hd"><span class="tag ' + (n.type === 'warning' ? 'warn' : n.type === 'update' ? 'ok' : 'acc') + '">' + esc(n.type || 'info') + '</span>' + (n.pinned ? '<span class="tag">Pinned</span>' : '') + '<span class="sp"></span><span style="color:var(--muted);font-size:12px">' + esc(fmt(n.at)) + '</span></div><b>' + esc(n.title) + '</b>' + (n.message ? '<div class="txt" style="color:#4b5563;margin-top:2px">' + esc(n.message) + '</div>' : '') + '<div class="btns"><button class="btn bad sm" data-nd="' + esc(n.id) + '">Delete</button></div></div>'; }).join('') : '<div class="empty">Abhi koi notification nahi</div>') + '</div></div>';
+    $('#nsend').onclick = function () {
+      var t = $('#nt').value.trim(); if (!t) { toast('Title zaroori hai'); return; }
+      var l = $('#nl').value.trim(); if (l && !VV.util.safeUrl(l)) { toast('Link https:// se shuru hona chahiye'); return; }
+      var id = VV.util.newId('n');
+      db.set('notifs/' + id, { title: t, message: $('#nm').value.trim(), type: $('#ny').value, link: l, pinned: $('#np').checked, at: Date.now() })
+        .then(reload).then(function () { toast('Notification published'); }).catch(fail);
+    };
+    v.onclick = function (e) { var b = e.target.closest('[data-nd]'); if (b && confirm('Notification delete karni hai?')) db.remove('notifs/' + b.dataset.nd).then(reload).then(function () { toast('Deleted'); }).catch(fail); };
+  };
+
+  /* ---------- Site updates ---------- */
+  R.site = function (v) {
+    var s = S.cfg.site, b = s.banner, ups = keys(S.d.updates).map(function (id) { var u = S.d.updates[id]; u.id = id; return u; }).sort(function (a, c) { return (c.at || 0) - (a.at || 0); });
+    v.innerHTML =
+      '<div class="card"><h2>Maintenance mode</h2><div class="desc">ON karte hi sabhi users ko sirf ye message dikhega. Site update ke waqt use karo.</div>' +
+      '<label class="switch"><input type="checkbox" id="mOn"' + (s.maintenance ? ' checked' : '') + '><i></i><span>Maintenance mode<small>Users site use nahi kar payenge</small></span></label>' +
+      '<label class="f" for="mMsg">Message shown to users</label><textarea class="ta" id="mMsg" maxlength="300">' + esc(s.maintenanceMsg) + '</textarea>' +
+      '<div class="btns"><button class="btn pri" id="mSave">Save maintenance</button></div></div>' +
+      '<div class="card"><h2>Announcement banner</h2><div class="desc">Site ke sabse upar ek patli strip. User ✕ dabakar hata sakta hai.</div>' +
+      '<label class="switch"><input type="checkbox" id="bOn"' + (b.enabled ? ' checked' : '') + '><i></i><span>Show banner</span></label>' +
+      '<label class="f" for="bTxt">Banner text</label><input class="in" id="bTxt" maxlength="160" value="' + esc(b.text) + '" placeholder="Jaise: Sunday ko naya batch launch ho raha hai">' +
+      '<div class="row"><div><label class="f" for="bTy">Style</label><select class="sel" id="bTy">' + [['info', 'Info (blue)'], ['success', 'Success (green)'], ['warn', 'Warning (amber)']].map(function (o) { return '<option value="' + o[0] + '"' + (b.type === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
+      '<div><label class="f" for="bLn">Link (optional)</label><input class="in" id="bLn" value="' + esc(b.link) + '" placeholder="https://"></div></div>' +
+      '<div class="btns"><button class="btn pri" id="bSave">Save banner</button></div></div>' +
+      '<div class="card"><h2>Publish site update</h2><div class="desc">Har user ko ek baar "What\'s new" popup dikhega jab tak wo nayi version dekh na le.</div>' +
+      '<div class="row"><div><label class="f" for="uV" style="margin-top:0">Version</label><input class="in" id="uV" maxlength="20" placeholder="1.1.0" value="' + esc(nextVer(ups)) + '"></div><div style="flex:3"><label class="f" for="uT" style="margin-top:0">Title</label><input class="in" id="uT" maxlength="80" placeholder="Jaise: Doubts ab batch-wise dikhte hain"></div></div>' +
+      '<label class="f" for="uN">What changed (ek line = ek point)</label><textarea class="ta" id="uN" maxlength="600" placeholder="Naya My Doubts page&#10;Study me enrolled batches&#10;Bug fixes"></textarea>' +
+      '<label class="switch"><input type="checkbox" id="uNotif" checked><i></i><span>Notification bhi bhejo</span></label>' +
+      '<div class="btns"><button class="btn pri" id="uPub">Publish update</button></div></div>' +
+      '<div class="card"><h2>Update history</h2>' + (ups.length ? ups.map(function (u) { return '<div class="item"><div class="hd"><span class="tag acc">v' + esc(u.version) + '</span><b>' + esc(u.title) + '</b><span class="sp"></span><span style="color:var(--muted);font-size:12px">' + esc(fmt(u.at)) + '</span></div><div class="txt" style="color:#4b5563">' + esc(u.notes) + '</div></div>'; }).join('') : '<div class="empty">Abhi koi update publish nahi hua</div>') + '</div>';
+
+    $('#mSave').onclick = function () { save('config/site', { maintenance: $('#mOn').checked, maintenanceMsg: $('#mMsg').value.trim() || DEF.site.maintenanceMsg }, 'Maintenance saved'); };
+    $('#bSave').onclick = function () {
+      var l = $('#bLn').value.trim(); if (l && !VV.util.safeUrl(l)) { toast('Link https:// se shuru hona chahiye'); return; }
+      if ($('#bOn').checked && !$('#bTxt').value.trim()) { toast('Banner text likho'); return; }
+      save('config/site/banner', { enabled: $('#bOn').checked, text: $('#bTxt').value.trim(), type: $('#bTy').value, link: l }, 'Banner saved');
+    };
+    $('#uPub').onclick = function () {
+      var ver = $('#uV').value.trim(), t = $('#uT').value.trim(), n = $('#uN').value.trim();
+      if (!ver || !t) { toast('Version aur title zaroori hain'); return; }
+      var u = { version: ver, title: t, notes: n, at: Date.now() }, id = VV.util.newId('v');
+      var jobs = [db.set('config/site/update', u), db.set('updates/' + id, u)];
+      if ($('#uNotif').checked) jobs.push(db.set('notifs/' + VV.util.newId('n'), { title: 'Update ' + ver + ': ' + t, message: n, type: 'update', link: '', pinned: false, at: Date.now() }));
+      Promise.all(jobs).then(reload).then(function () { toast('Update published'); }).catch(fail);
+    };
+  };
+  function nextVer(ups) { if (!ups.length) return '1.0.0'; var p = String(ups[0].version).split('.').map(Number); if (p.some(isNaN)) return ''; p[p.length - 1]++; return p.join('.'); }
+  function save(path, obj, msg) { return db.update(path, obj).then(reload).then(function () { toast(msg); }).catch(fail); }
+
+  /* ---------- Telegram ---------- */
+  R.telegram = function (v) {
+    var t = S.cfg.telegram, k = S.k;
+    v.innerHTML = '<div class="kpis" style="grid-template-columns:repeat(3,1fr)">' + kpi('Join taps', num(k.tgClicks), 'total button clicks') + kpi('Unique users', num(k.tgUsers), 'tapped at least once') + kpi('Tap rate', k.total ? Math.round(k.tgUsers / k.total * 100) + '%' : '0%', 'of all users') + '</div>' +
+      '<div class="cols eq" style="align-items:start"><div class="card"><h2>Telegram popup</h2><div class="desc">Yahan se link, text aur kab dikhna hai sab badlo. Save karte hi sabhi users par lagu.</div>' +
+      '<label class="switch"><input type="checkbox" id="tOn"' + (t.enabled ? ' checked' : '') + '><i></i><span>Popup enabled<small>OFF karne par popup aur sidebar link dono hat jate hain</small></span></label>' +
+      '<label class="f" for="tUrl">Telegram link</label><input class="in" id="tUrl" value="' + esc(t.url) + '" placeholder="https://t.me/yourchannel">' +
+      '<label class="f" for="tTi">Popup title</label><input class="in" id="tTi" maxlength="70" value="' + esc(t.title) + '">' +
+      '<label class="f" for="tMs">Popup message</label><textarea class="ta" id="tMs" maxlength="220">' + esc(t.message) + '</textarea>' +
+      '<label class="f" for="tBt">Button text</label><input class="in" id="tBt" maxlength="30" value="' + esc(t.button) + '">' +
+      '<label class="switch" style="margin-top:8px"><input type="checkbox" id="tEn"' + (t.onEnter ? ' checked' : '') + '><i></i><span>Site kholte hi dikhao<small>Har naye session me ek baar</small></span></label>' +
+      '<label class="switch"><input type="checkbox" id="tBa"' + (t.onBatch ? ' checked' : '') + '><i></i><span>Batch kholte hi dikhao<small>Enroll ya batch open karte waqt</small></span></label>' +
+      '<label class="switch"><input type="checkbox" id="tHj"' + (t.hideAfterJoin ? ' checked' : '') + '><i></i><span>Join tap ke baad chhupao<small>Jis device ne Join dabaya, use dobara nahi dikhega</small></span></label>' +
+      '<div class="btns"><button class="btn pri" id="tSave">Save Telegram settings</button></div></div>' +
+      '<div class="card"><h2>Preview</h2><div class="desc">Users ko aisa dikhega</div><div class="preview" id="tPrev"></div></div></div>';
+    function prev() {
+      $('#tPrev').innerHTML = '<div class="pv-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></div><div style="font-weight:800;font-size:16px">' + esc($('#tTi').value) + '</div><div style="color:#4b5563;margin-top:4px;line-height:1.55">' + esc($('#tMs').value) + '</div><div class="pv-btn">' + esc($('#tBt').value) + '</div>';
+    }
+    ['tTi', 'tMs', 'tBt'].forEach(function (id) { $('#' + id).oninput = prev; }); prev();
+    $('#tSave').onclick = function () {
+      var u = $('#tUrl').value.trim();
+      if (!/^https:\/\/(t\.me|telegram\.me)\/.+/i.test(u)) { toast('Valid Telegram link daalo (https://t.me/...)'); return; }
+      if (!$('#tTi').value.trim() || !$('#tBt').value.trim()) { toast('Title aur button text zaroori hain'); return; }
+      save('config/telegram', { enabled: $('#tOn').checked, url: u, title: $('#tTi').value.trim(), message: $('#tMs').value.trim(), button: $('#tBt').value.trim(), onEnter: $('#tEn').checked, onBatch: $('#tBa').checked, hideAfterJoin: $('#tHj').checked }, 'Telegram settings saved');
+    };
+  };
+
+  /* ---------- Settings ---------- */
+  R.settings = function (v) {
+    v.innerHTML =
+      '<div class="card"><h2>Data storage</h2><div class="desc">Abhi: <b>' + (db.mode === 'cloud' ? 'Cloud (Firebase) — sabhi users ka data' : 'This browser only — demo mode') + '</b></div>' +
+      (db.mode === 'local' ? '<div class="notice"><b>Real users track karne ke liye ye zaroori hai.</b> Bina cloud database ke har user ka data uske apne phone me rehta hai, admin ko nahi dikhta.</div>' : '') +
+      '<ol class="steps"><li><a href="https://console.firebase.google.com" target="_blank" rel="noopener">Firebase console</a> me project banao, Build → Realtime Database → Create database.</li><li>Rules tab me neeche wale rules paste karke Publish karo.</li><li>Database URL copy karke niche daalo, ya <code>vv-core.js</code> me <code>VV_CLOUD</code> me paste karo (sabhi users ke liye zaroori).</li></ol>' +
+      '<pre class="code">{ "rules": { ".read": true, ".write": true } }</pre>' +
+      '<label class="f" for="cUrl">Firebase Realtime Database URL</label><input class="in" id="cUrl" placeholder="https://your-project-default-rtdb.firebaseio.com" value="' + esc(db.url) + '">' +
+      '<div class="btns"><button class="btn out" id="cTest">Test connection</button><button class="btn pri" id="cSave">Use in this browser</button>' + (db.url && localStorage.getItem('vv_cloud') ? '<button class="btn bad" id="cClear">Switch back to demo</button>' : '') + '</div>' +
+      '<div class="desc" style="margin:12px 0 0">Ye button sirf isi browser ke liye hai. Sabhi users ke liye <code>vv-core.js</code> ki pehli config line me <code>var VV_CLOUD = \'your-url\';</code> likho aur file dobara upload karo.</div></div>' +
+      '<div class="card"><h2>Change admin password</h2><div class="desc">Password code me plain text me nahi rehta: PBKDF2-SHA-256 (salted, 250000 rounds) ke roop me rehta hai. Naya password daalo, neeche wali line <code>vv-core.js</code> me <code>ADMIN_KDF</code> ki line ki jagah paste karo.</div>' +
+      '<label class="f" for="pNew" style="margin-top:0">New password</label><input class="in" id="pNew" type="password" autocomplete="new-password" placeholder="12+ characters: A-Z, a-z, 0-9, symbol">' +
+      '<div class="desc" id="pMeter" style="margin:8px 0 0"></div>' +
+      '<div class="btns"><button class="btn pri" id="pGen">Generate secure line</button></div><pre class="code hide" id="pOut"></pre></div>' +
+      '<div class="card"><h2>Login history</h2><div class="desc">Is browser par last 30 admin login attempts. Lock: 5 galat attempts par 5 min, phir 15 min, 1 ghanta, 24 ghante. Session 20 min inactive rehne par apne aap logout ho jaata hai.</div>' +
+      (logins().length ? '<div class="tw"><table><thead><tr><th>Time</th><th>Result</th><th>Browser</th></tr></thead><tbody>' + logins().slice(0, 12).map(function (l) { return '<tr><td>' + esc(fmt(l.t)) + '</td><td>' + (l.ok ? '<span class="tag">Success</span>' : '<span class="tag bad">Failed</span>') + '</td><td>' + esc(l.ua) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="desc" style="margin:0">Abhi koi record nahi.</div>') + '</div>' +
+      '<div class="card"><h2>Backup</h2><div class="desc">Poora data JSON file me download karo, ya pehle wala backup wapas laao.</div>' +
+      '<div class="btns" style="margin-top:0"><button class="btn out" id="bkExp">Download backup</button><button class="btn out" id="bkImp">Restore from file</button><input type="file" id="bkFile" accept="application/json" class="hide"></div></div>' +
+      '<div class="card"><h2>Danger zone</h2><div class="desc">Users, enrollments, doubts aur views delete honge. Notifications aur settings bache rahenge.</div>' +
+      '<div class="row"><input class="in" id="dzIn" placeholder="Type DELETE to confirm"><button class="btn bad" id="dzGo" style="flex:0 0 auto">Delete all user data</button></div></div>' +
+      '<div class="card"><h2>Security note</h2><div class="desc" style="margin:0">Ye admin login browser-side hai (PBKDF2 hash, lockout, idle logout ke saath): page hide karta hai, par database ko khud lock nahi karta. Firebase rules upar wale (open) hain, matlab technical user seedha database me likh sakta hai. Serious use ke liye admin actions ko server-side (Cloudflare Function ya Firebase Auth) ke peeche laana chahiye.</div></div>';
+
+    $('#cTest').onclick = function () {
+      var u = $('#cUrl').value.trim().replace(/\/+$/, ''); if (!/^https:\/\/.+/.test(u)) { toast('https:// wala URL daalo'); return; }
+      fetch(u + '/.json?shallow=true').then(function (r) { toast(r.ok ? 'Connected. Database reachable hai.' : 'Error ' + r.status + '. Rules ya URL check karo.'); }).catch(function () { toast('Connect nahi hua. URL check karo.'); });
+    };
+    $('#cSave').onclick = function () { var u = $('#cUrl').value.trim().replace(/\/+$/, ''); if (!/^https:\/\/.+/.test(u)) { toast('https:// wala URL daalo'); return; } localStorage.setItem('vv_cloud', u); location.reload(); };
+    var cc = $('#cClear'); if (cc) cc.onclick = function () { localStorage.removeItem('vv_cloud'); location.reload(); };
+    function pwScore(p) { return [p.length >= 12, /[a-z]/.test(p), /[A-Z]/.test(p), /\d/.test(p), /[^A-Za-z0-9]/.test(p)]; }
+    $('#pNew').oninput = function () {
+      var s = pwScore(this.value), n = s.filter(Boolean).length;
+      $('#pMeter').textContent = this.value ? (n === 5 ? 'Strong password' : 'Abhi kam hai: ' + [!s[0] && '12+ characters', !s[1] && 'small letter', !s[2] && 'capital letter', !s[3] && 'number', !s[4] && 'symbol'].filter(Boolean).join(', ')) : '';
+    };
+    $('#pGen').onclick = function () {
+      var p = $('#pNew').value; if (pwScore(p).some(function (x) { return !x; })) { toast('Password strong rakho: 12+ chars, A-Z, a-z, 0-9, symbol'); return; }
+      VV.newKdfConfig(p).then(function (line) { var o = $('#pOut'); o.classList.remove('hide'); o.textContent = line; }).catch(function () { toast('Sirf https ya localhost par chalta hai'); });
+    };
+    $('#bkExp').onclick = function () { db.get('').then(function (all) { download('vidyaverse-backup-' + ymd() + '.json', JSON.stringify(all || {}, null, 1), 'application/json'); }).catch(fail); };
+    $('#bkImp').onclick = function () { $('#bkFile').click(); };
+    $('#bkFile').onchange = function () {
+      var f = this.files[0]; if (!f) return;
+      if (!confirm('Backup restore karne se abhi ka data replace ho jayega. Pakka?')) return;
+      f.text().then(function (t) { var o = JSON.parse(t); return db.set('', o); }).then(function () { return reload(); }).then(function () { toast('Backup restored'); }).catch(function () { toast('Restore fail. File check karo.'); });
+    };
+    $('#dzGo').onclick = function () {
+      if ($('#dzIn').value !== 'DELETE') { toast('Confirm ke liye DELETE type karo'); return; }
+      Promise.all(['users', 'enroll', 'views', 'doubts', 'blocked'].map(function (p) { return db.remove(p); })).then(reload).then(function () { toast('User data deleted'); }).catch(fail);
+    };
+  };
+
+  /* =====================================================
+     BOOT
+     ===================================================== */
+  if (authed()) start();
+})();
+</script>
+</body>
+</html>
